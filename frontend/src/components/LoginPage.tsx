@@ -55,31 +55,8 @@ export default function LoginPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Full Name Input */}
-            <div className="group">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Nom complet</label>
-              <div className="relative">
-                <input
-                  type="text"
-                  name="fullName"
-                  placeholder="Entrez votre nom complet"
-                  value={formData.fullName}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 pl-12 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400 transition-all duration-200 group-hover:border-gray-400"
-                  required
-                />
-                <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
+       
+           
 
             {/* Email Input */}
             <div className="group">
@@ -187,7 +164,7 @@ export default function LoginPage() {
             <p className="text-sm text-gray-600">
               Déjà un compte ?{" "}
               <button className="text-green-600 hover:text-green-700 font-semibold focus:outline-none transition-colors duration-200 hover:underline">
-                Se connecter
+                S'inscrire
               </button>
             </p>
           </div>
