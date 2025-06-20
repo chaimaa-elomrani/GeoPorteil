@@ -3,6 +3,29 @@
     "nodemon": "^3.1.10"
   },
   "dependencies": {
-    "bcrypt": "^6.0.0"
-  }
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "mongoose": "^8.16.0"
+  },
+  "name": "geoporteil_project",
+  "version": "1.0.0",
+  "description": "��#\u0000 \u0000G\u0000e\u0000o\u0000P\u0000o\u0000r\u0000t\u0000e\u0000i\u0000l\u0000\r\u0000 \u0000#\u0000 \u0000G\u0000e\u0000o\u0000P\u0000o\u0000r\u0000t\u0000e\u0000i\u0000l\u0000\r\u0000 \u0000",
+  "main": "index.js",
+    "scripts": {
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chaimaa-elomrani/GeoPorteil.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/chaimaa-elomrani/GeoPorteil/issues"
+  },
+  "homepage": "https://github.com/chaimaa-elomrani/GeoPorteil#readme"
 }

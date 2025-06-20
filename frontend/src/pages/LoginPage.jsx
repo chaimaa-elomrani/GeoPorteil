@@ -1,18 +1,19 @@
-"use client"
-
-import type React from "react"
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { post } from "../api.js"
 
 export default function LoginPage() {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
-    fullName: "",
     email: "",
     password: "",
   })
 
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({
       ...prev,
@@ -20,15 +21,58 @@ export default function LoginPage() {
     }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setIsLoading(true)
+    setError('')
+    setSuccess('')
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      // Validate form data
+      if (!formData.email.trim() || !formData.password.trim()) {
+        throw new Error('Email et mot de passe sont obligatoires')
+      }
 
-    console.log("Form submitted:", formData)
-    setIsLoading(false)
+      // Send login request to backend
+      const response = await post('/auth/login', {
+        email: formData.email,
+        password: formData.password,
+      })
+
+      // Check response structure - your backend returns this format
+      if (response.message === 'connexion réussie' && response.token) {
+        // Store token and user data
+        localStorage.setItem('token', response.token)
+        localStorage.setItem('user', JSON.stringify(response.user))
+        
+        setSuccess('Connexion réussie! Redirection...')
+        
+        // Reset form
+        setFormData({
+          email: '',
+          password: '',
+        })
+
+        // Navigate based on user role
+        setTimeout(() => {
+          if (response.user.role === 'admin') {
+            navigate('/admin-dashboard')
+          } else {
+            navigate('/dashboard')
+          }
+        }, 1500)
+      } else {
+        throw new Error(response.message || 'Erreur lors de la connexion')
+      }
+    } catch (err) {
+      setError(err.message || 'Une erreur est survenue')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleSignupClick = () => {
+    navigate('/signup')
   }
 
   return (
@@ -40,27 +84,38 @@ export default function LoginPage() {
           backgroundImage: "url('/background.jpg')",
         }}
       />
-
       {/* Dark Overlay */}
       <div className="absolute inset-0 bg-black bg-opacity-60" />
-
+      
       {/* Content */}
       <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
         <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8 w-full max-w-md border border-white/20">
           {/* Header */}
           <div className="text-center mb-8">
-  
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">Bienvenue</h1>
-            <p className="text-gray-600">Créez votre compte pour commencer</p>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Connexion</h1>
+            <p className="text-gray-600">Connectez-vous à votre compte</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-       
-           
+          {/* Error Message */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+              {error}
+            </div>
+          )}
 
+          {/* Success Message */}
+          {success && (
+            <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+              {success}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Input */}
             <div className="group">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Adresse email</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Adresse email
+              </label>
               <div className="relative">
                 <input
                   type="email"
@@ -86,12 +141,14 @@ export default function LoginPage() {
 
             {/* Password Input */}
             <div className="group">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Mot de passe</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Mot de passe
+              </label>
               <div className="relative">
                 <input
                   type="password"
                   name="password"
-                  placeholder="Créez un mot de passe sécurisé"
+                  placeholder="Entrez votre mot de passe"
                   value={formData.password}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 pl-12 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400 transition-all duration-200 group-hover:border-gray-400"
@@ -108,6 +165,13 @@ export default function LoginPage() {
                   </svg>
                 </div>
               </div>
+            </div>
+
+            {/* Forgot Password Link */}
+            <div className="text-right">
+              <a href="#" className="text-sm text-green-600 hover:text-green-700 hover:underline">
+                Mot de passe oublié ?
+              </a>
             </div>
 
             {/* Submit Button */}
@@ -138,10 +202,10 @@ export default function LoginPage() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Création en cours...
+                  Connexion en cours...
                 </div>
               ) : (
-                "Créer mon compte"
+                "Se connecter"
               )}
             </button>
           </form>
@@ -158,12 +222,14 @@ export default function LoginPage() {
             </div>
           </div>
 
-         
           {/* Footer */}
           <div className="mt-8 text-center">
             <p className="text-sm text-gray-600">
-              Déjà un compte ?{" "}
-              <button className="text-green-600 hover:text-green-700 font-semibold focus:outline-none transition-colors duration-200 hover:underline">
+              Pas encore de compte ?{" "}
+              <button
+                onClick={handleSignupClick}
+                className="text-green-600 hover:text-green-700 font-semibold focus:outline-none transition-colors duration-200 hover:underline"
+              >
                 S'inscrire
               </button>
             </p>
@@ -172,7 +238,7 @@ export default function LoginPage() {
           {/* Terms */}
           <div className="mt-4 text-center">
             <p className="text-xs text-gray-500">
-              En créant un compte, vous acceptez nos{" "}
+              En vous connectant, vous acceptez nos{" "}
               <a href="#" className="text-green-600 hover:underline">
                 Conditions d'utilisation
               </a>{" "}
